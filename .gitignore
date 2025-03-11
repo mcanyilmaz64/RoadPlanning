@@ -1,0 +1,36 @@
+# Visual Studio için .gitignore dosyası
+
+# Kullanıcıya özel dosyalar
+*.rsuser
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Visual Studio kodlama yardımı dosyaları
+.vs/
+
+# Build (derleme) dosyaları
+bin/
+obj/
+*.cache
+*.ilk
+*.pdb
+*.ipch
+*.tlog
+
+# Paketler ve bağımlılıklar
+node_modules/
+packages/
+
+# Geçici dosyalar
+*.log
+*.tmp
+*.bak
+
+# macOS ve Windows sistem dosyaları
+.DS_Store
+Thumbs.db
+
+# Git özellikli dosyalar
+!.gitignore
