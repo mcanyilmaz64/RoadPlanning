@@ -1,6 +1,6 @@
 ﻿namespace PublicTransportApp.Models.Passengers
 {
-    public class Old
+    public class Old:Passengers
     {
     }
 }

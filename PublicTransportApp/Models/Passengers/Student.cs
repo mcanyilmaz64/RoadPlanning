@@ -1,6 +1,6 @@
 ﻿namespace PublicTransportApp.Models.Passengers
 {
-    public class Student
+    public class Student:Passengers
     {
     }
 }

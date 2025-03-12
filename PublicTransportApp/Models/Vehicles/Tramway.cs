@@ -1,6 +1,9 @@
-﻿namespace PublicTransportApp.Models.Vehicles
+﻿using Microsoft.AspNetCore.Components.Sections;
+
+namespace PublicTransportApp.Models.Vehicles
 {
-    public class Tramway
+    public class Tramway:Vehicles
     {
+       
     }
 }

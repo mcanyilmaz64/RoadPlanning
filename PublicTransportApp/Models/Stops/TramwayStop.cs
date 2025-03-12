@@ -1,6 +1,6 @@
 ﻿namespace PublicTransportApp.Models.Stops
 {
-    public class TramwayStop
+    public class TramwayStop:Stops
     {
     }
 }

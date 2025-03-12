@@ -1,6 +1,6 @@
 ﻿namespace PublicTransportApp.Models.Vehicles
 {
-    public class Taxi
+    public class Taxi:Vehicles
     {
     }
 }
