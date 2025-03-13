@@ -1,6 +1,6 @@
 ﻿namespace PublicTransportApp.Models.Vehicles
 {
-    public class Bus:Vehicles
+    public class Bus:Vehicle
     {
     }
 }

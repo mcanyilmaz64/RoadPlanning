@@ -2,7 +2,7 @@
 
 namespace PublicTransportApp.Models.Vehicles
 {
-    public class Tramway:Vehicles
+    public class Tramway:Vehicle
     {
        
     }

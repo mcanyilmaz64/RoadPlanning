@@ -1,6 +1,6 @@
 ﻿namespace PublicTransportApp.Models.Vehicles
 {
-    public abstract class Vehicles
+    public abstract class Vehicle
     {
 
 

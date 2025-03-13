@@ -1,0 +1,28 @@
+﻿@model List<PublicTransportApp.Models.Stops.Stop>
+
+<h2>Duraklar Listesi</h2>
+<table class="table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>İsim</th>
+            <th>Tür</th>
+            <th>Enlem</th>
+            <th>Boylam</th>
+            <th>Son Durak mı?</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var stop in Model)
+        {
+            <tr>
+                <td>@stop.Id</td>
+                <td>@stop.Name</td>
+                <td>@stop.Type</td>
+                <td>@stop.Lat</td>
+                <td>@stop.Lon</td>
+                <td>@(stop.SonDurak ? "Evet" : "Hayır")</td>
+            </tr>
+        }
+    </tbody>
+</table>
