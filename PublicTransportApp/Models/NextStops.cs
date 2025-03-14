@@ -3,8 +3,8 @@
     public class NextStops
     {
         public string StopId { get; set; }
-        public double Mesafe { get; set; }
-        public int Sure { get; set; }
-        public double Ucret { get; set; }
+        public float Mesafe { get; set; }
+        public float Sure { get; set; }
+        public float Ucret { get; set; }
     }
 }

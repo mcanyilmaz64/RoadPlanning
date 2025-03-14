@@ -1,7 +1,44 @@
 ﻿@model List<PublicTransportApp.Models.Stops.Stop>
+<style>
+    table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+    }
 
-<h2>Duraklar Listesi</h2>
-<table class="table">
+    th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+    }
+
+    th {
+    background-color: #4CAF50;
+    color: white;
+    }
+
+    tr:nth-child(even) {
+    background-color: #f2f2f2;
+    }
+
+    .next-stop {
+    font-size: 0.9em;
+    color: #555;
+    }
+
+    @@media screen and (max-width: 768px) {
+    table {
+    width: 100%;
+    }
+
+    th, td {
+    padding: 6px;
+    font-size: 0.9em;
+    }
+    }
+</style>
+
+<table>
     <thead>
         <tr>
             <th>ID</th>
@@ -10,6 +47,7 @@
             <th>Enlem</th>
             <th>Boylam</th>
             <th>Son Durak mı?</th>
+            <th>Sonraki Duraklar</th>
         </tr>
     </thead>
     <tbody>
@@ -22,6 +60,34 @@
                 <td>@stop.Lat</td>
                 <td>@stop.Lon</td>
                 <td>@(stop.SonDurak ? "Evet" : "Hayır")</td>
+                <td>
+
+
+                   @*  @if (stop.NextStops != null)
+                    {
+                        @stop.NextStops.Count
+                    }
+                    else
+                    {
+                        <span>Yok</span>
+                    } *@
+
+                    @if (stop.NextStops != null)
+                    {
+                        <ul class="next-stop">
+                            @foreach (var nextStops in stop.NextStops)
+                            {
+                                <li>
+                                    Durak ID: @nextStops.StopId, Mesafe: @nextStops.Mesafe km, Süre: @nextStops.Sure dk, Ücret: @nextStops.Ucret TL
+                                </li>
+                            }
+                        </ul>
+                    }
+                    else
+                    {
+                        <span>Yok</span>
+                    }
+                </td>
             </tr>
         }
     </tbody>

@@ -21,7 +21,11 @@ namespace PublicTransportApp.Services
             var stopsJson = root.GetProperty("duraklar").GetRawText();
 
             // JSON'u Stop nesnelerine dönüştür
-            return JsonSerializer.Deserialize<List<Stop>>(stopsJson, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            return JsonSerializer.Deserialize<List<Stop>>(stopsJson, new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true,
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                AllowTrailingCommas = true });
         }
         //public PublicTransportData ReadData()
         //{

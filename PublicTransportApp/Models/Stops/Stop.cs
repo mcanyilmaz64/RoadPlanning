@@ -1,4 +1,7 @@
-﻿namespace PublicTransportApp.Models.Stops
+﻿using System.Runtime.InteropServices;
+using System.Text.Json.Serialization;
+
+namespace PublicTransportApp.Models.Stops
 {
     public class Stop
     {
@@ -9,7 +12,11 @@
         public double Lat { get; set; }
         public double Lon { get; set; }
         public bool SonDurak { get; set; }
-        public List<NextStops> NextStops { get; set; }
+       
+        //[JsonPropertyName("nextStops")]//if I dont identify this row it doesn't running correctly  
+        public List<NextStops> NextStops { get; set; } = new List<NextStops>();
+       
+       // public NextStop NextStop { get; set; }
         public Transfer Transfer { get; set; }
 
     }

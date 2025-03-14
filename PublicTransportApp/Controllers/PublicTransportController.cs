@@ -17,17 +17,46 @@ public class PublicTransportController : Controller
     public IActionResult Index()
     {
         List<Stop> stops = _reader.ReadStops();
+        int i = 0;
+        int busStopCount = 0;
+        int tramStopCount = 0;
+        List<BusStop> busStop = new List<BusStop>();
+        List<TramwayStop> tramwayStop = new List<TramwayStop>();
+        foreach (var stop in stops){
+            
+            if (stop.Type == "bus")
+            {
+                busStopCount++;
+
+                busStop.Add(new BusStop(stop.Id, stop.Name, stop.Type, stop.Lat, stop.Lon,
+                    stop.SonDurak, stop.NextStops, stop.Transfer));
+               
+            }
+            else
+            {
+                tramStopCount++;
+                tramwayStop.Add(new TramwayStop(stop.Id, stop.Name, stop.Type, stop.Lat, stop.Lon,
+                    stop.SonDurak, stop.NextStops, stop.Transfer));
+            }
+
+
+            i++;
+
+        }
+        int nice=tramwayStop.Count;
+
+
 
 
         return View(stops); // View'a modeli gönderin
     }
 
-    [HttpGet("stops")]
-    public IActionResult GetStops()
-    {
-        List<Stop> stops = _reader.ReadStops();
-        return Ok(stops);
-    }
+    //[HttpGet("stops")]
+    //public IActionResult GetStops()
+    //{
+    //    List<Stop> stops = _reader.ReadStops();
+    //    return Ok(stops);
+    //}
 
     //[HttpGet]
     //public IActionResult GetTransportData()
