@@ -1,94 +1,202 @@
-﻿@model List<PublicTransportApp.Models.Stops.Stop>
-<style>
-    table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 20px;
-    }
+﻿@{
+	ViewData["Title"] = "Index";
+	Layout = "~/Views/Shared/UILayout.cshtml";
+}
 
-    th, td {
-    border: 1px solid #ddd;
-    padding: 8px;
-    text-align: center;
-    }
+<!doctype html>
+<html lang="zxx">
+<head>
+	<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+	<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+	<style>
+		#map {
+			height: 400px;
+			width: 100%;
+			border-radius: 10px;
+			margin-top: 20px;
+		}
 
-    th {
-    background-color: #4CAF50;
-    color: white;
-    }
+		.coordinates {
+			margin-top: 15px;
+			font-size: 18px;
+			background: white;
+			padding: 10px;
+			border-radius: 8px;
+			display: inline-block;
+		}
+	</style>
+	<style>
+		.custom-button-container {
+			text-align: center; /* Butonu sola hizalar */
+			margin-bottom: 20px; /* Altına boşluk ekler */
+		}
 
-    tr:nth-child(even) {
-    background-color: #f2f2f2;
-    }
+		.custom-button {
+			margin-left: 20px; /* Butonu biraz sola kaydırır */
+		}
+	</style>
+</head>
+<body>
 
-    .next-stop {
-    font-size: 0.9em;
-    color: #555;
-    }
+	<section class="w3l-main-slider" id="home">
+		<div class="banner-content">
+			<div id="demo-1"
+				 data-zs-src='["/Traversal-Liberty/assets/images/banner8.jpg", "/Traversal-Liberty/assets/images/banner7.jpg","/Traversal-Liberty/assets/images/banner5.jpg", "/Traversal-Liberty/assets/images/banner6.jpg"]'
+				 data-zs-overlay="dots">
+				<div class="demo-inner-content">
+					<div class="container">
+						<div class="banner-infhny">
+							<h3>RotaKou Uygulamamıza Hoşgeldiniz!</h3>
+							<h6 class="mb-3">Rotaları Keşfet</h6>
+							<div class="flex-wrap search-wthree-field mt-md-5 mt-4">
+								@* <form action="#" method="post" class="booking-form">
+									<div class="row book-form">
+										<!-- İlk Kullanıcı Girişi -->
+										<div class="form-input col-md-4 mt-md-0 mt-3">
+											<input type="text" id="start-location" name="userInput1" class="form-control" placeholder="Başlangıç Konumunu Giriniz" required="">
+										</div>
+										<!-- İkinci Kullanıcı Girişi -->
+										<div class="form-input col-md-4 mt-md-0 mt-3">
+											<input type="text" id="end-location" name="userInput2" class="form-control" placeholder="Hedef Konumu Giriniz" required="">
+										</div>
+										<!-- Arama Butonu -->
+										<div class="bottom-btn col-md-4 mt-md-0 mt-3">
+											<button class="btn btn-style btn-secondary">
+												<span class="fa fa-search mr-3" aria-hidden="true"></span> Ara
+											</button>
+										</div>
+									</div>
+								</form> *@
+							</div>
 
-    @@media screen and (max-width: 768px) {
-    table {
-    width: 100%;
-    }
-
-    th, td {
-    padding: 6px;
-    font-size: 0.9em;
-    }
-    }
-</style>
-
-<table>
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>İsim</th>
-            <th>Tür</th>
-            <th>Enlem</th>
-            <th>Boylam</th>
-            <th>Son Durak mı?</th>
-            <th>Sonraki Duraklar</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var stop in Model)
-        {
-            <tr>
-                <td>@stop.Id</td>
-                <td>@stop.Name</td>
-                <td>@stop.Type</td>
-                <td>@stop.Lat</td>
-                <td>@stop.Lon</td>
-                <td>@(stop.SonDurak ? "Evet" : "Hayır")</td>
-                <td>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
 
 
-                   @*  @if (stop.NextStops != null)
-                    {
-                        @stop.NextStops.Count
-                    }
-                    else
-                    {
-                        <span>Yok</span>
-                    } *@
 
-                    @if (stop.NextStops != null)
-                    {
-                        <ul class="next-stop">
-                            @foreach (var nextStops in stop.NextStops)
-                            {
-                                <li>
-                                    Durak ID: @nextStops.StopId, Mesafe: @nextStops.Mesafe km, Süre: @nextStops.Sure dk, Ücret: @nextStops.Ucret TL
-                                </li>
-                            }
-                        </ul>
-                    }
-                    else
-                    {
-                        <span>Yok</span>
-                    }
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+
+	<section class="w3l-contact" id="contact">
+		<div class="contact-infubd py-5">
+			<div class="container py-lg-3">
+				<div class="contact-grids row">
+					<div class="col-lg-6 contact-left">
+						<div class="partners">
+							<div class="cont-details">
+								<h5>Başlayın</h5>
+								<p class="mt-3 mb-4">
+									Sayın kullanıcımız lütfen hedef noktanızı seçmeden yanda bulunan formda profilinizi ve başlangıç saatini giriniz !
+								</p>
+							</div>
+
+						</div>
+					</div>
+					<div class="col-lg-6 mt-lg-0 mt-5 contact-right">
+						<form action="https://sendmail.w3layouts.com/submitForm" method="post" class="signin-form">
+							<div class="input-grids">
+								<div class="form-group">
+									<select name="w3lName" id="w3lName" class="contact-input" style="appearance: none; -webkit-appearance: none; -moz-appearance: none; background-color: white; border: 1px solid #ccc; padding: 10px; width: 100%; font-size: 16px; border-radius: 5px; cursor: pointer;">
+										<option value="" selected disabled>Profil Seçiniz</option>
+										<option value="Profil1">Öğrenci</option>
+										<option value="Profil2">Tam</option>
+										<option value="Profil3">Yaşlı</option>
+									</select>
+								</div>
+
+								<div class="form-group">
+									<input type="time" name="w3lSender" id="w3lSender" class="contact-input" required />
+								</div>
+
+
+							</div>
+
+
+						</form>
+					</div>
+
+				</div>
+
+			</div>
+		</div>
+
+
+
+	</section>
+	<!-- Yeni Harita Section'ı -->
+
+	<section class="w3l-map-section" id="map-section">
+		<div class="container py-5">
+			<h4 class="text-center">Haritada Başlangıç ve Hedef Noktası Seçin</h4>
+			<div id="map"></div>
+			<p class="coordinates text-center mt-3">
+				<strong>Başlangıç Noktası:</strong> <span id="start-coords">Henüz seçilmedi</span> <br>
+				<strong>Hedef Noktası:</strong> <span id="end-coords">Henüz seçilmedi</span>
+			</p>
+		</div>
+
+		<div class="custom-button-container">
+			<button class="btn btn-style btn-primary custom-button">Rota Bul</button>
+		</div>
+
+		
+	</section>
+
+	<script>
+		var map = L.map('map').setView([40.7657, 29.9290], 15); // Kocaeli Yeni Cuma Camii merkezli başlangıç konumu
+
+
+		// OpenStreetMap tabanlı ücretsiz harita katmanı
+		L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+			attribution: '© OpenStreetMap contributors'
+		}).addTo(map);
+
+		var startMarker, endMarker;
+
+		// Haritada tıklama olaylarını dinleyerek başlangıç ve hedef noktalarını belirleme
+		map.on('click', function (e) {
+			if (!startMarker) {
+				startMarker = L.marker(e.latlng, { draggable: true }).addTo(map)
+					.bindPopup("Başlangıç Noktası").openPopup();
+				document.getElementById("start-coords").innerText = e.latlng.lat + ", " + e.latlng.lng;
+				document.getElementById("start-location").value = e.latlng.lat + ", " + e.latlng.lng;
+			} else if (!endMarker) {
+				endMarker = L.marker(e.latlng, { draggable: true }).addTo(map)
+					.bindPopup("Hedef Noktası").openPopup();
+				document.getElementById("end-coords").innerText = e.latlng.lat + ", " + e.latlng.lng;
+				document.getElementById("end-location").value = e.latlng.lat + ", " + e.latlng.lng;
+			}
+		});
+	</script>
+
+	<!-- Template JavaScript -->
+	<script src="~/Traversal-Liberty/assets/js/jquery-3.3.1.min.js"></script>
+	<script src="~/Traversal-Liberty/assets/js/theme-change.js"></script>
+	<script src="~/Traversal-Liberty/assets/js/jquery.min.js"></script>
+	<script src="~/Traversal-Liberty/assets/js/modernizr-2.6.2.min.js"></script>
+	<script src="~/Traversal-Liberty/assets/js/jquery.zoomslider.min.js"></script>
+	<script src="~/Traversal-Liberty/assets/js/owl.carousel.js"></script>
+	<script>
+		$(document).ready(function () {
+			$("#owl-demo1").owlCarousel({
+				loop: true,
+				margin: 20,
+				nav: false,
+				responsiveClass: true,
+				responsive: {
+					0: { items: 1, nav: false },
+					736: { items: 1, nav: false },
+					1000: { items: 1, nav: false, loop: true }
+				}
+			})
+		});
+	</script>
+	<script src="~/Traversal-Liberty/assets/js/jquery.waypoints.min.js"></script>
+	<script src="~/Traversal-Liberty/assets/js/jquery.countup.js"></script>
+	<script>$('.counter').countUp();</script>
+	<script src="~/Traversal-Liberty/assets/js/bootstrap.min.js"></script>
+
+</body>
+</html>
