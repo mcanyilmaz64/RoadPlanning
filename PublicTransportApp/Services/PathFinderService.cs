@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using PublicTransportApp.Models;
+using PublicTransportApp.Models.Stops;
 
 namespace PublicTransportApp.Services
 {
@@ -16,7 +17,7 @@ namespace PublicTransportApp.Services
             public PathNode Parent { get; set; }
         }
 
-        private readonly List<Node> _nodes;
+        private readonly List<Stop> _nodes;
         private readonly Dictionary<string, int> _distances;
 
         public PathFinderService()
@@ -25,7 +26,7 @@ namespace PublicTransportApp.Services
             _distances = InitializeDistances();
         }
 
-        public List<Node> GetNodes()
+        public List<Stop> GetNodes()
         {
             return _nodes;
         }
@@ -169,20 +170,20 @@ namespace PublicTransportApp.Services
             };
         }
 
-        private List<Node> InitializeNodes()
+        private List<Stop> InitializeNodes()
         {
-            return new List<Node>
+            return new List<Stop>
             {
-                new Node { Id = 0, Name = "İstanbul", Type = "A", X = 150, Y = 100 },
-                new Node { Id = 1, Name = "Ankara", Type = "A", X = 350, Y = 150 },
-                new Node { Id = 2, Name = "İzmir", Type = "A", X = 100, Y = 300 },
-                new Node { Id = 3, Name = "Antalya", Type = "A", X = 250, Y = 400 },
-                new Node { Id = 4, Name = "Konya", Type = "A", X = 400, Y = 300 },
-                new Node { Id = 5, Name = "Bursa", Type = "A", X = 200, Y = 200 },
-                new Node { Id = 6, Name = "Adana", Type = "B", X = 500, Y = 350 },
-                new Node { Id = 7, Name = "Trabzon", Type = "B", X = 600, Y = 100 },
-                new Node { Id = 8, Name = "Diyarbakır", Type = "B", X = 550, Y = 250 },
-                new Node { Id = 9, Name = "Samsun", Type = "B", X = 450, Y = 50 }
+                new Stop { Id = 0, Name = "İstanbul", Type = "A", X = 150, Y = 100 },
+                new Stop { Id = 1, Name = "Ankara", Type = "A", X = 350, Y = 150 },
+                new Stop { Id = 2, Name = "İzmir", Type = "A", X = 100, Y = 300 },
+                new Stop { Id = 3, Name = "Antalya", Type = "A", X = 250, Y = 400 },
+                new Stop { Id = 4, Name = "Konya", Type = "A", X = 400, Y = 300 },
+                new Stop { Id = 5, Name = "Bursa", Type = "A", X = 200, Y = 200 },
+                new Stop { Id = 6, Name = "Adana", Type = "B", X = 500, Y = 350 },
+                new Stop { Id = 7, Name = "Trabzon", Type = "B", X = 600, Y = 100 },
+                new Stop { Id = 8, Name = "Diyarbakır", Type = "B", X = 550, Y = 250 },
+                new Stop { Id = 9, Name = "Samsun", Type = "B", X = 450, Y = 50 }
             };
         }
 

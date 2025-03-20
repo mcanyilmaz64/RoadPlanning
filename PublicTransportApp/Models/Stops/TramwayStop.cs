@@ -4,7 +4,7 @@
     {
         public TramwayStop(string ıd, string name, string type, double lat, double lon, bool sonDurak, List<NextStops> nextStops, Transfer transfer)
         {
-            Id = ıd;
+            IdStr = ıd; ///// DÜZENLEME GELECEK
             Name = name;
             Type = type;
             Lat = lat;

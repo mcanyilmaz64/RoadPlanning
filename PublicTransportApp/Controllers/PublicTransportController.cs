@@ -28,14 +28,14 @@ public class PublicTransportController : Controller
             {
                 busStopCount++;
 
-                busStop.Add(new BusStop(stop.Id, stop.Name, stop.Type, stop.Lat, stop.Lon,
+                busStop.Add(new BusStop(stop.IdStr, stop.Name, stop.Type, stop.Lat, stop.Lon,
                     stop.SonDurak, stop.NextStops, stop.Transfer));
                
             }
             else
             {
                 tramStopCount++;
-                tramwayStop.Add(new TramwayStop(stop.Id, stop.Name, stop.Type, stop.Lat, stop.Lon,
+                tramwayStop.Add(new TramwayStop(stop.IdStr, stop.Name, stop.Type, stop.Lat, stop.Lon,
                     stop.SonDurak, stop.NextStops, stop.Transfer));
             }
 

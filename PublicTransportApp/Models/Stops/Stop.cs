@@ -5,8 +5,10 @@ namespace PublicTransportApp.Models.Stops
 {
     public class Stop
     {
+        public int Id { get; set; }
 
-        public string Id { get; set; }
+        [JsonPropertyName("Id")]
+        public string IdStr { get; set; }
         public string Name { get; set; }
         public string Type { get; set; }
         public double Lat { get; set; }
@@ -18,6 +20,8 @@ namespace PublicTransportApp.Models.Stops
        
        // public NextStop NextStop { get; set; }
         public Transfer Transfer { get; set; }
+        public int X { get; set; }
+        public int Y { get; set; }
 
     }
 }
