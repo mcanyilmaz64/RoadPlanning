@@ -1,0 +1,195 @@
+﻿@model PublicTransportApp.Models.Stops.RootModel
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/UILayout.cshtml";
+}
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Durak Bilgileri</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f7fa;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .table-container {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            margin-top: 20px;
+        }
+
+        .durak-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+            .durak-table thead tr {
+                background-color: #3498db;
+                color: #ffffff;
+                text-align: left;
+            }
+
+            .durak-table th,
+            .durak-table td {
+                padding: 12px 15px;
+                border-bottom: 1px solid #e1e5eb;
+            }
+
+            .durak-table tbody tr:nth-child(even) {
+                background-color: #f8f9fa;
+            }
+
+            .durak-table tbody tr:hover {
+                background-color: #f1f4f8;
+            }
+
+        .page-title {
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+
+        .durak-type {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .type-bus {
+            background-color: #2ecc71;
+            color: white;
+        }
+
+        .type-metro {
+            background-color: #e74c3c;
+            color: white;
+        }
+
+        .type-tram {
+            background-color: #f39c12;
+            color: white;
+        }
+
+        .type-train {
+            background-color: #9b59b6;
+            color: white;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        /* Layout düzeltmesi */
+        .main-content {
+            padding-top: 60px; /* Header için alan bırakma */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="main-content">
+            <h1 class="page-title"></h1>
+
+            <div class="table-container">
+                <div class="table-responsive">
+                    <table class="durak-table">
+                        <thead>
+                            <tr>
+                                <th>Id</th>
+                                <th>Durak Adı</th>
+                                <th>Tip</th>
+                                <th>Enlem</th>
+                                <th>Boylam</th>
+                                <th>Son Durak</th>
+                                <th>Sonraki Duraklar</th>
+                                <th>Aktarma</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var stop in Model.duraklar)
+                            {
+                                <tr>
+                                    <td>@stop.Id</td>
+                                    <td>@stop.Name</td>
+                                    <td>
+                                        @{
+                                            var typeClass = "";
+                                            switch (stop.Type?.ToLower())
+                                            {
+                                                case "bus":
+                                                    typeClass = "type-bus";
+                                                    break;
+                                               
+                                                case "tram":
+                                                    typeClass = "type-tram";
+                                                    break;
+                                              
+                                                default:
+                                                    typeClass = "";
+                                                    break;
+                                            }
+                                        }
+                                        <span class="durak-type @typeClass">@stop.Type</span>
+                                    </td>
+                                    <td>@stop.Lat</td>
+                                    <td>@stop.Lon</td>
+                                    <td>@(stop.SonDurak ? "Evet" : "Hayır")</td>
+                                    <td>
+                                        @if (stop.NextStops != null && stop.NextStops.Any())
+                                        {
+                                            <ul>
+                                                @foreach (var next in stop.NextStops)
+                                                {
+                                                    <li>
+                                                        Durak: @next.StopId<br />
+                                                        Mesafe: @next.Mesafe km<br />
+                                                        Süre: @(next.Sure ?? 0) dk<br />
+                                                        Ücret: @(next.Ucret.HasValue ? next.Ucret + " TL" : "-")
+                                                    </li>
+                                                }
+                                            </ul>
+                                        }
+                                        else
+                                        {
+                                            <span> - </span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (stop.Transfer != null)
+                                        {
+                                            <div>
+                                                Aktarma Durak: @stop.Transfer.TransferStopId<br />
+                                                Süre: @stop.Transfer.TransferSure dk<br />
+                                                Ücret: @stop.Transfer.TransferUcret TL
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <span>-</span>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,4 +1,5 @@
-﻿<header id="site-header" class="fixed-top">
+﻿
+<header id="site-header" class="fixed-top">
     <div class="container">
         <nav class="navbar navbar-expand-lg stroke">
             <h1>
@@ -21,10 +22,10 @@
             <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
                 <ul class="navbar-nav mr-auto">
                     <li class="nav-item active">
-                        <a class="nav-link" href="index.html">Ana Sayfa <span class="sr-only">(current)</span></a>
+                        <a class="nav-link" href="@Url.Action("Index", "PublicTransport")">Ana Sayfa <span class="sr-only">(current)</span></a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="about.html">Rotalar</a>
+                        <a class="nav-link" href="@Url.Action("Index", "Routes")">Rotalar</a>
                     </li>
    
                     <li class="nav-item">
@@ -33,9 +34,8 @@
 
                 </ul>
             </div>
-            <div class="d-lg-block d-none">
-                <a href="contact.html" class="btn btn-style btn-secondary">Taksi Ucreti Hesapla</a>
-            </div>
+            <a href="contact.html" class="btn btn-style btn-success">Taksi Uygulaması</a>
+
             <!-- toggle switch for light and dark theme -->
             <div class="mobile-position">
                 <nav class="navigation">
