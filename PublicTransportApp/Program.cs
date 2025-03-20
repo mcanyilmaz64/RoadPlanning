@@ -20,8 +20,19 @@ app.UseRouting();
 
 app.UseAuthorization();
 
-app.MapControllerRoute(
+
+app.MapControllerRoute(// en baþtaki ilk defa açýlýyor.. //https://localhost:44360/
     name: "default",
+    pattern: "{controller=Route}/{action=Index}/{id?}");
+
+app.MapControllerRoute(
+    name: "def",
     pattern: "{controller=PublicTransport}/{action=Index}/{id?}");
+
+app.MapControllerRoute(
+    name: "home",
+    pattern: "{controller=PublicTransport}/{action=Home}/{id?}"
+);
+
 
 app.Run();

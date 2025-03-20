@@ -1,0 +1,472 @@
+﻿@model PublicTransportApp.Models.RouteViewModel
+@{
+    ViewData["Title"] = "Ulaşım Güzergahı A* Algoritması";
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="mb-0">Ulaşım Güzergahı A* Algoritması</h2>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4 mb-4">
+                            <div class="card">
+                                <div class="card-header bg-secondary text-white">
+                                    Güzergah Ayarları
+                                </div>
+                                <div class="card-body">
+                                    <form id="routeForm">
+                                        <div class="form-group mb-3">
+                                            <label for="startNode">Başlangıç Noktası:</label>
+                                            <select id="startNode" class="form-control">
+                                                @foreach (var node in Model.Nodes)
+                                                {
+                                                    <option value="@node.Id">@node.Id - @node.Name (@node.Type)</option>
+                                                }
+                                            </select>
+                                        </div>
+                                        <div class="form-group mb-3">
+                                            <label for="endNode">Hedef Noktası:</label>
+                                            <select id="endNode" class="form-control">
+                                                @foreach (var node in Model.Nodes)
+                                                {
+                                                    <option value="@node.Id">@node.Id - @node.Name (@node.Type)</option>
+                                                }
+                                            </select>
+                                        </div>
+                                        <div class="form-group text-center">
+                                            <button type="button" id="findRouteButton" class="btn btn-primary">Güzergahı Bul</button>
+                                            <button type="button" id="resetButton" class="btn btn-danger ms-2">Sıfırla</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="card mt-3">
+                                <div class="card-header bg-info text-white">
+                                    Bilgiler
+                                </div>
+                                <div class="card-body">
+                                    <div class="mb-2">
+                                        <span class="legend-circle type-a"></span> Ana Düğüm (Tipi A)
+                                    </div>
+                                    <div class="mb-2">
+                                        <span class="legend-circle type-b"></span> Alt Düğüm (Tipi B)
+                                    </div>
+                                    <div class="mb-2">
+                                        <span class="legend-circle start-node"></span> Başlangıç Noktası
+                                    </div>
+                                    <div class="mb-2">
+                                        <span class="legend-circle end-node"></span> Hedef Noktası
+                                    </div>
+                                    <div class="mb-2">
+                                        <span class="legend-line"></span> Mevcut Bağlantı
+                                    </div>
+                                    <div class="mb-2">
+                                        <span class="legend-line path-line"></span> Hesaplanan Rota
+                                    </div>
+                                    <div class="alert alert-info mt-3">
+                                        <strong>Not:</strong> Her düğüm çiftinin arasındaki mesafe farklıdır. A* algoritması en kısa yolu bulacaktır.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card mt-3">
+                                <div class="card-header bg-success text-white">
+                                    Rota Detayları
+                                </div>
+                                <div class="card-body">
+                                    <div id="route-details" class="alert alert-light">
+                                        Bir rota hesaplamak için başlangıç ve bitiş düğümlerini seçin.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="card">
+                                <div class="card-header bg-success text-white">
+                                    Güzergah Haritası
+                                </div>
+                                <div class="card-body">
+                                    <div id="map-container" class="position-relative" style="height: 600px; background-color: #f8f9fa; border: 1px solid #ccc;">
+                                        @foreach (var node in Model.Nodes)
+                                        {
+                                            <div id="node-@node.Id" class="node type-@node.Type.ToLower()" data-id="@node.Id" style="left: @(node.X)px; top: @(node.Y)px;">
+                                                <span class="node-label">@node.Id</span>
+                                                <div class="node-info">@node.Name (@node.Type)</div>
+                                            </div>
+                                        }
+
+                                        @foreach (var distance in Model.Distances)
+                                        {
+                                            var parts = distance.Key.Split('-');
+                                            var fromId = int.Parse(parts[0]);
+                                            var toId = int.Parse(parts[1]);
+                                            var fromNode = Model.Nodes.Find(n => n.Id == fromId);
+                                            var toNode = Model.Nodes.Find(n => n.Id == toId);
+
+                                            if (fromNode != null && toNode != null)
+                                            {
+                                                var dx = toNode.X - fromNode.X;
+                                                var dy = toNode.Y - fromNode.Y;
+                                                var length = Math.Sqrt(dx * dx + dy * dy);
+                                                var angle = Math.Atan2(dy, dx) * (180 / Math.PI);
+                                                var labelX = fromNode.X + dx / 2;
+                                                var labelY = fromNode.Y + dy / 2;
+
+                                                <div id="connection-@fromId-@toId" class="connection" data-from="@fromId" data-to="@toId"
+                                                     style="width: @(length)px; left: @(fromNode.X + 25)px; top: @(fromNode.Y + 25)px; transform: rotate(@(angle)deg);">
+                                                </div>
+                                                <div class="connection-label" style="left: @(labelX)px; top: @(labelY)px;">
+                                                    @distance.Value km
+                                                </div>
+                                            }
+                                        }
+                                    </div>
+                                    <div id="result-info" class="alert alert-primary mt-3" style="display:none;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        #map-container {
+            overflow: hidden;
+        }
+
+        .node {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            position: absolute;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            z-index: 10;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+
+        .node:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+        }
+
+        .node-label {
+            font-size: 16px;
+        }
+
+        .node-info {
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0,0,0,0.7);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            white-space: nowrap;
+            display: none;
+            z-index: 20;
+        }
+
+        .node:hover .node-info {
+            display: block;
+        }
+
+        .type-a {
+            background-color: #007bff;
+        }
+
+        .type-b {
+            background-color: #6f42c1;
+        }
+
+        .start-node {
+            background-color: #28a745 !important;
+            animation: pulse 1.5s infinite;
+        }
+
+        .end-node {
+            background-color: #dc3545 !important;
+            animation: pulse 1.5s infinite;
+        }
+
+        @@keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+
+        .connection {
+            position: absolute;
+            height: 3px; /* Kalınlığı artırıldı */
+            background-color: #6c757d; /* Daha koyu bir gri renk */
+            transform-origin: 0 0;
+            z-index: 5;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.3); /* Gölge eklendi */
+        }
+
+        .connection-label {
+            position: absolute;
+            background-color: rgba(255,255,255,0.9); /* Opaklık artırıldı */
+            padding: 3px 7px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: bold; /* Kalın yazı tipi eklendi */
+            color: #495057; /* Daha koyu metin rengi */
+            white-space: nowrap;
+            z-index: 6;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+            transform: translate(-50%, -50%); /* Ortalamak için */
+        }
+
+        .path {
+            background-color: #fd7e14 !important;
+            height: 4px;
+            z-index: 7;
+            animation: drawPath 1s forwards;
+        }
+
+        @@keyframes drawPath {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .legend-circle {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+
+        .legend-line {
+            display: inline-block;
+            width: 30px;
+            height: 3px;
+            background-color: #adb5bd;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+
+        .path-line {
+            background-color: #fd7e14;
+            height: 4px;
+        }
+    </style>
+}
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+
+                function renderConnections() {
+            // Model.Distances bilgisini sayfadan çekelim
+            const distancesData = @Html.Raw(Json.Serialize(Model.Distances));
+            const nodes = {};
+
+            // Önce tüm düğümlerin konumlarını toplayalım
+            $(".node").each(function() {
+                const id = $(this).data("id");
+                const x = parseInt($(this).css("left")) + 25; // 25 = node width/2
+                const y = parseInt($(this).css("top")) + 25;  // 25 = node height/2
+                nodes[id] = { x, y };
+            });
+
+            // Mevcut bağlantıları temizleyelim
+            $(".connection, .connection-label").remove();
+
+            // Bağlantıları yeniden oluşturalım
+            for (const key in distancesData) {
+                const parts = key.split('-');
+                const fromId = parseInt(parts[0]);
+                const toId = parseInt(parts[1]);
+                const distance = distancesData[key];
+
+                if (nodes[fromId] && nodes[toId]) {
+                    const fromX = nodes[fromId].x;
+                    const fromY = nodes[fromId].y;
+                    const toX = nodes[toId].x;
+                    const toY = nodes[toId].y;
+
+                    const dx = toX - fromX;
+                    const dy = toY - fromY;
+                    const length = Math.sqrt(dx * dx + dy * dy);
+                    const angle = Math.atan2(dy, dx) * (180 / Math.PI);
+
+                    // Bağlantı çizgisini ekleyin
+                    const connectionDiv = $('<div></div>')
+                        .attr('id', `connection-${fromId}-${toId}`)
+                        .addClass('connection')
+                        .data('from', fromId)
+                        .data('to', toId)
+                        .css({
+                            'width': `${length}px`,
+                            'left': `${fromX}px`,
+                            'top': `${fromY}px`,
+                            'transform': `rotate(${angle}deg)`
+                        });
+
+                    // Mesafe etiketini ekleyin
+                    const labelX = fromX + dx / 2;
+                    const labelY = fromY + dy / 2;
+                    const labelDiv = $('<div></div>')
+                        .addClass('connection-label')
+                        .text(`${distance} km`)
+                        .css({
+                            'left': `${labelX}px`,
+                            'top': `${labelY}px`
+                        });
+
+                    // DOM'a ekleyin
+                    $('#map-container').append(connectionDiv);
+                    $('#map-container').append(labelDiv);
+                }
+            }
+        }
+
+        // Sayfa yüklendiğinde bağlantıları çiz
+        renderConnections();
+
+        // Pencere boyutu değiştiğinde bağlantıları yeniden çiz
+        $(window).on('resize', function() {
+            renderConnections();
+        });
+
+
+            let pathConnections = [];
+            let currentPath = [];
+
+            function findPath() {
+                clearPath();
+
+                const startId = parseInt($("#startNode").val());
+                const endId = parseInt($("#endNode").val());
+
+                if (startId === endId) {
+                    showResult("Başlangıç ve hedef noktaları aynı olamaz!");
+                    return;
+                }
+
+                $(`#node-${startId}`).addClass("start-node");
+                $(`#node-${endId}`).addClass("end-node");
+
+                $.ajax({
+                    url: '@Url.Action("FindPath", "Route")',
+                    type: 'POST',
+                    data: {
+                        startNodeId: startId,
+                        endNodeId: endId
+                    },
+                    success: function (result) {
+                        if (result.error) {
+                            showResult(result.error);
+                            return;
+                        }
+
+                        currentPath = result.path;
+                        showPath(result);
+                    },
+                    error: function () {
+                        showResult("Bir hata oluştu. Lütfen tekrar deneyiniz.");
+                    }
+                });
+            }
+
+            function showPath(result) {
+                const path = result.path;
+
+                for (let i = 0; i < path.length - 1; i++) {
+                    const fromId = path[i];
+                    const toId = path[i + 1];
+
+                    const connectionId = `connection-${fromId}-${toId}`;
+                    const connection = $(`#${connectionId}`);
+
+                    if (connection.length === 0) {
+                        const reverseConnectionId = `connection-${toId}-${fromId}`;
+                        const reverseConnection = $(`#${reverseConnectionId}`);
+
+                        if (reverseConnection.length > 0) {
+                            reverseConnection.addClass('path');
+                            pathConnections.push(reverseConnectionId);
+                        }
+                    } else {
+                        connection.addClass('path');
+                        pathConnections.push(connectionId);
+                    }
+                }
+
+                let routeDetails = `<h5>Rota: `;
+                for (let i = 0; i < result.nodeNames.length; i++) {
+                    routeDetails += result.nodeNames[i];
+                    if (i < result.nodeNames.length - 1) routeDetails += " → ";
+                }
+                routeDetails += `</h5>`;
+
+                routeDetails += `<p>Toplam Mesafe: <strong>${result.totalDistance} km</strong></p>`;
+                routeDetails += `<p>İncelenen Düğüm Sayısı: ${result.exploredNodes}</p>`;
+
+                routeDetails += `<p>Güzergah Detayları:</p><ul>`;
+                for (let i = 0; i < path.length - 1; i++) {
+                    const fromId = path[i];
+                    const toId = path[i + 1];
+
+                    const distance = getDistance(fromId, toId);
+                    routeDetails += `<li>${result.nodeNames[i]} → ${result.nodeNames[i+1]}: ${distance} km</li>`;
+                }
+                routeDetails += `</ul>`;
+
+                $("#route-details").html(routeDetails);
+                showResult(`Rota bulundu! Toplam mesafe: ${result.totalDistance} km`);
+            }
+
+            function getDistance(fromId, toId) {
+                const distances = @Html.Raw(Json.Serialize(Model.Distances));
+                return distances[`${fromId}-${toId}`] || distances[`${toId}-${fromId}`];
+            }
+
+            function clearPath() {
+                $(".node").removeClass("start-node end-node");
+                $(".connection").removeClass("path");
+                pathConnections = [];
+                currentPath = [];
+                $("#route-details").html("Bir rota hesaplamak için başlangıç ve bitiş düğümlerini seçin.");
+                $("#result-info").hide();
+            }
+
+            function showResult(message) {
+                $("#result-info").html(message).show();
+            }
+
+            $("#findRouteButton").on("click", findPath);
+            $("#resetButton").on("click", clearPath);
+        });
+    </script>
+}
+
+           

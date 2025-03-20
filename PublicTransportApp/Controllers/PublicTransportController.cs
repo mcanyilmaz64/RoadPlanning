@@ -51,18 +51,21 @@ public class PublicTransportController : Controller
         return View(stops); // View'a modeli gönderin
     }
 
-    //[HttpGet("stops")]
-    //public IActionResult GetStops()
-    //{
-    //    List<Stop> stops = _reader.ReadStops();
-    //    return Ok(stops);
-    //}
+    [HttpGet]
+    public IActionResult Home()
+    {
+        return View();
+    }
 
-    //[HttpGet]
-    //public IActionResult GetTransportData()
-    //{
-    //    var data = _reader.ReadData();
-    //    return View(data);
-    //}
+    [HttpPost]
+    public IActionResult SaveCoordinates(double startLat, double startLon, double destLat, double destLon)
+    {
+        // Koordinatları işleme veya veritabanına kaydetme işlemi burada yapılır
+        ViewBag.Message = "Koordinatlar başarıyla kaydedildi!";
+        return View("Index");
+    }
+
+
+   
 
 }

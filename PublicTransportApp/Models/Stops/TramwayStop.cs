@@ -1,5 +1,4 @@
-﻿
-namespace PublicTransportApp.Models.Stops
+﻿namespace PublicTransportApp.Models.Stops
 {
     public class TramwayStop : Stop
     {

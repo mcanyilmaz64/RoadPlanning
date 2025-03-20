@@ -1,4 +1,4 @@
-﻿namespace PublicTransportApp.Models
+﻿namespace PublicTransportApp.Models.Stops
 {
     public class NextStops
     {
