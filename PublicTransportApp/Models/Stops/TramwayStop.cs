@@ -2,7 +2,7 @@
 {
     public class TramwayStop : Stop
     {
-        public TramwayStop(string ıd, string name, string type, double lat, double lon, bool sonDurak, List<NextStops> nextStops, Transfer transfer)
+        public TramwayStop(string ıd, string name, string type, double lat, double lon, bool sonDurak, List<NextStops> nextStops,Transfer transfer)
         {
             IdStr = ıd; ///// DÜZENLEME GELECEK
             Name = name;

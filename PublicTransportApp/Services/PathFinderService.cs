@@ -22,7 +22,7 @@ namespace PublicTransportApp.Services
 
         public PathFinderService()
         {
-            _nodes = InitializeNodes();
+            _nodes = InitializeNodes(); // burada bir sıkıntı çıkabilir silinmesi gerekebilir
             _distances = InitializeDistances();
         }
 
@@ -66,8 +66,10 @@ namespace PublicTransportApp.Services
 
                 openList.Remove(currentNode);
                 closedList.Add(currentNode);
-
-                foreach (var neighbor in GetNeighbors(currentNode.Id))
+                Dictionary<string,float> distances = new Dictionary<string,float>();
+                 
+                // komşu listesi döndürülüyor "int,int" şeklinde bir dictionary de
+                foreach (var neighbor in GetNeighbors(currentNode.Id))//List<(int Id, int Distance)>
                 {
                     if (closedList.Any(n => n.Id == neighbor.Id))
                     {
@@ -103,7 +105,7 @@ namespace PublicTransportApp.Services
                 ExploredNodes = closedList.Count + openList.Count
             };
         }
-
+        ////// nodeları idsinden buluuyor
         private double CalculateHeuristic(int nodeId1, int nodeId2)
         {
             var node1 = _nodes.Find(n => n.Id == nodeId1);
@@ -118,8 +120,8 @@ namespace PublicTransportApp.Services
 
             return 0;
         }
-
-        private List<(int Id, int Distance)> GetNeighbors(int nodeId)
+                       ///////// belirli bir düğümün komşuları alınıyor //liste döndürülüyor
+        private List<(int Id, int Distance)> GetNeighbors(int nodeId)// köklü bir değişime uğrayacak bu fonksiyon
         {
             var neighbors = new List<(int Id, int Distance)>();
 
@@ -138,6 +140,20 @@ namespace PublicTransportApp.Services
             return neighbors;
         }
 
+       
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
         private PathResult ReconstructPath(PathNode endNode)
         {
             var path = new List<int>();
@@ -198,7 +214,7 @@ namespace PublicTransportApp.Services
                 { "4-1", 260 }, { "4-3", 320 }, { "4-6", 300 }, { "4-8", 800 },
                 { "5-0", 110 }, { "5-1", 380 }, { "5-2", 310 },
                 { "6-3", 450 }, { "6-4", 300 }, { "6-8", 550 },
-                { "7-0", 1050 }, { "7-1", 720 }, { "7-9", 400 },
+                { "7-0", 1050 }, { "7-1",720 }, { "7-9", 400 },
                 { "8-1", 670 }, { "8-4", 800 }, { "8-6", 550 },
                 { "9-0", 750 }, { "9-1", 415 }, { "9-7", 400 }
             };
