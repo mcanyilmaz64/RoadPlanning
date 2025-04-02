@@ -7,7 +7,7 @@ namespace PublicTransportApp.Services
    
     public class JsonReader
     {
-        private readonly string _filePath = "wwwroot/veriler.json";
+        private readonly  string _filePath = "wwwroot/veriler.json";
         public List<Stop> ReadStops()
         {
             if (!File.Exists(_filePath))

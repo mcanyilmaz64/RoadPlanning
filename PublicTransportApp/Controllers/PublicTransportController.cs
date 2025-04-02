@@ -5,8 +5,6 @@ using PublicTransportApp.Models;
 using PublicTransportApp.Services;
 using Newtonsoft.Json;
 
-
-
 public class PublicTransportController : Controller
 {
     

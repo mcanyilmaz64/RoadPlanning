@@ -2,7 +2,18 @@
 @{
     ViewData["Title"] = "Index";
     Layout = "~/Views/Shared/UILayout.cshtml";
+    var start = ViewBag.StartStop as PublicTransportApp.Models.Stops.Stop;
+    var end = ViewBag.EndStop as PublicTransportApp.Models.Stops.Stop;
+    string profile = ViewBag.Profile?.ToString() ?? "-";
+    string time = ViewBag.Time?.ToString() ?? "-";
 }
-
-<h1>Result</h1>
-
+}
+}
+<div class="container mt-4">
+    <h2>🚍 Rota Sonucu</h2>
+    <p><strong>Kullanıcı Tipi:</strong> @profile</p>
+    <p><strong>Saat:</strong> @time</p>
+    <hr />
+    <p><strong>Başlangıç Durağı:</strong> @start?.Name (@start?.Lat, @start?.Lon)</p>
+    <p><strong>Hedef Durağı:</strong> @end?.Name (@end?.Lat, @end?.Lon)</p>
+</div>
