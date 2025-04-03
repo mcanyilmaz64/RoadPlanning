@@ -1,33 +1,25 @@
-﻿
-using PublicTransportApp.Models.Stops;
+﻿using PublicTransportApp.Models.Stops;
 using PublicTransportApp.Models.Graph;
 
 namespace PublicTransportApp.Services
 {
-    
-
     public static class GraphBuilder
     {
         public static Graph BuildGraph(List<Stop> stops)
         {
             Graph graph = new();
 
-            // Tüm durakları düğüm olarak ekle
-            foreach (var stop in stops)
-            {
-                var node = new Node(stop.Id, stop.Lat, stop.Lon);
-                graph.AddNode(node);
-            }
-
             // Tüm durakların bağlantılarını kenar olarak ekle
             foreach (var stop in stops)
             {
                 foreach (var next in stop.NextStops)
                 {
-                    if (graph.Nodes.TryGetValue(stop.Id, out var fromNode) &&
-                        graph.Nodes.TryGetValue(next.StopId, out var toNode))
+                    // Hedef durağı bul
+                    var toStop = stops.FirstOrDefault(s => s.Id == next.StopId);
+                    if (toStop != null)
                     {
-                        graph.AddEdge(fromNode, toNode, next.Mesafe, next.Ucret ?? 0, next.Sure ?? 0);
+                        // Zaman maliyeti (dakika) ve para maliyeti (TL) olarak ekle
+                        graph.AddEdge(stop, toStop, next.Sure ?? 0, next.Ucret ?? 0);
                     }
                 }
 
@@ -35,11 +27,13 @@ namespace PublicTransportApp.Services
                 if (stop.Transfer != null)
                 {
                     var transfer = stop.Transfer;
-
-                    if (graph.Nodes.TryGetValue(stop.Id, out var fromNode) &&
-                        graph.Nodes.TryGetValue(transfer.TransferStopId, out var toNode))
+                    
+                    // Transfer durağını bul
+                    var transferStop = stops.FirstOrDefault(s => s.Id == transfer.TransferStopId);
+                    if (transferStop != null)
                     {
-                        graph.AddEdge(fromNode, toNode, 0.2, transfer.TransferUcret, transfer.TransferSure);
+                        // Transfer için zaman maliyeti (dakika) ve para maliyeti (TL) olarak ekle
+                        graph.AddEdge(stop, transferStop, transfer.TransferSure, transfer.TransferUcret);
                     }
                 }
             }
@@ -47,5 +41,4 @@ namespace PublicTransportApp.Services
             return graph;
         }
     }
-
 }

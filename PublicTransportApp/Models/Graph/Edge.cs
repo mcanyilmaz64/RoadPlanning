@@ -1,14 +1,16 @@
-﻿namespace PublicTransportApp.Models.Graph
+﻿using PublicTransportApp.Models.Stops;
+
+namespace PublicTransportApp.Models.Graph
 {
     public class Edge
     {
-        public Node From { get; set; }
-        public Node To { get; set; }
+        public Stop From { get; set; }
+        public Stop To { get; set; }
         public double Distance { get; set; } // km cinsinden
         public double Cost { get; set; }     // TL cinsinden
         public double Duration { get; set; } // dakika
 
-        public Edge(Node from, Node to, double distance, double cost, double duration)
+        public Edge(Stop from, Stop to, double distance, double cost, double duration)
         {
             From = from;
             To = to;
@@ -17,5 +19,4 @@
             Duration = duration;
         }
     }
-
 }

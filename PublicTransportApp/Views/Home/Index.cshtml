@@ -1,7 +1,65 @@
-﻿
+﻿@{
+    ViewData["Title"] = "Ana Sayfa";
+}
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="container mt-4">
+    <h2 class="text-center mb-4">Toplu Taşıma Rota Planlayıcı</h2>
+
+    <div class="card">
+        <div class="card-header">
+            <h4>Rota Hesapla</h4>
+        </div>
+        <div class="card-body">
+            <form action="/Result/Index" method="post">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h5>Başlangıç Noktası</h5>
+                        <div class="form-group mb-3">
+                            <label for="startLat">Enlem</label>
+                            <input type="number" step="any" class="form-control" id="startLat" name="startLat" required>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="startLon">Boylam</label>
+                            <input type="number" step="any" class="form-control" id="startLon" name="startLon" required>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <h5>Bitiş Noktası</h5>
+                        <div class="form-group mb-3">
+                            <label for="endLat">Enlem</label>
+                            <input type="number" step="any" class="form-control" id="endLat" name="endLat" required>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="endLon">Boylam</label>
+                            <input type="number" step="any" class="form-control" id="endLon" name="endLon" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mt-3">
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label for="profile">Profil</label>
+                            <select class="form-control" id="profile" name="profile">
+                                <option value="normal">Normal</option>
+                                <option value="student">Öğrenci</option>
+                                <option value="senior">65+ Yaş</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label for="time">Seyahat Zamanı</label>
+                            <input type="time" class="form-control" id="time" name="time">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-center mt-4">
+                    <button type="submit" class="btn btn-primary">Rota Bul</button>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
 
