@@ -96,7 +96,7 @@ namespace PublicTransportApp.Controllers
 
             if (walkToStopDistance >= 3.0)
             {
-                accessFare = 20.0 + walkToStopDistance * 12.0;
+                accessFare = 10.0 + walkToStopDistance * 4.0;
                 accessDuration = (int)(walkToStopDistance / 30.0 * 60); // km/h
                 model.AccessType = "Taksi";
             }
@@ -142,7 +142,7 @@ namespace PublicTransportApp.Controllers
 
                 if (distanceToDestination >= 3.0)
                 {
-                    model.DestinationAccessFare = 20.0 + distanceToDestination * 12.0;
+                    model.DestinationAccessFare = 10.0 + distanceToDestination * 4.0;
                     model.DestinationAccessDuration = distanceToDestination / 30.0 * 60;
                     model.DestinationAccessType = "Taksi";
                 }

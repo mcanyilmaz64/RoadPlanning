@@ -15,6 +15,13 @@
        
         <p><strong>Toplam Süre:</strong> @Model.TotalDuration dakika</p>
         <p><strong>Toplam Ücret:</strong> @Model.TotalFare ₺</p>
+        @if (Model.PaymentAmount < Model.TotalFare)
+        {
+            <div class="alert alert-danger mt-3">
+                <strong>⚠ Uyarı:</strong> Belirttiğiniz ödeme miktarı toplam ücreti karşılamıyor. Lütfen ödeme yönteminizi veya bakiyenizi gözden geçirin.
+            </div>
+        }
+
 
         @if (Model.EstimatedArrivalTime.HasValue)
         {
@@ -35,7 +42,7 @@
                 <small>
                     Süre: @((int)(Model.AccessType == "Taksi" ? Model.TotalDistance / 30.0 * 60 : Model.TotalDistance / 5.0 * 60)) dk |
                     Mesafe: @Model.TotalDistance.ToString("F2") km |
-                    Ücret: @(Model.AccessType == "Taksi" ? (20 + Model.TotalDistance * 12).ToString("F2") : "0") ₺
+                    Ücret: @(Model.AccessType == "Taksi" ? (10 + Model.TotalDistance * 4).ToString("F2") : "0") ₺
                 </small>
             </div>
         </li>
@@ -75,11 +82,16 @@
                 <strong>Son Duraktan Hedefe @Model.DestinationAccessType</strong><br />
                 <small>
                     Süre: @Model.DestinationAccessDuration.ToString("F0") dk |
-                    Mesafe: @((Model.DestinationAccessDuration / 5.0).ToString("F2")) km |
-                    Ücret: @Model.DestinationAccessFare.ToString("F2") ₺
+                    Mesafe: @(Model.DestinationAccessType == "Taksi"
+                    ? (Model.DestinationAccessDuration * 30.0 / 60.0).ToString("F2")
+                    : (Model.DestinationAccessDuration * 5.0 / 60.0).ToString("F2")) km |
+                    Ücret: @(Model.DestinationAccessType == "Taksi"
+                    ? (10 + ((Model.DestinationAccessDuration * 30.0 / 60.0) * 4)).ToString("F2")
+                    : "0.00") ₺
                 </small>
             </div>
         </li>
+
 
     </ol>
     <hr class="my-5" />
