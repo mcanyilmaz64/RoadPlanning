@@ -1,47 +1,46 @@
 ﻿using PublicTransportApp.Models.Stops;
+using PublicTransportApp.Models.Graph;
+
 
 namespace PublicTransportApp.Services
 {
-    public static class LocationService
-    {
-        public static Stop FindNearestStop(List<Stop> stops, double userLat, double userLon)
-        {
-            Stop nearestStop = null;
-            double minDistance = double.MaxValue;
+	public class LocationService
+	{
+		public Node FindClosestNode(double lat, double lon, Dictionary<string, Node> graph)
+		{
+			Node closest = null;
+			double minDistance = double.MaxValue;
 
-            foreach (var stop in stops)
-            {
-                double distance = CalculateDistance(userLat, userLon, stop.Lat, stop.Lon);
-                if (distance < minDistance)
-                {
-                    minDistance = distance;
-                    nearestStop = stop;
-                }
-            }
+			foreach (var node in graph.Values)
+			{
+				var distance = CalculateDistance(lat, lon, node.Stop.Lat, node.Stop.Lon);
+				if (distance < minDistance)
+				{
+					minDistance = distance;
+					closest = node;
+				}
+			}
 
-            return nearestStop;
-        }
+			return closest;
+		}
 
-        private static double CalculateDistance(double lat1, double lon1, double lat2, double lon2)
-        {
-            const double R = 6371; // Dünya'nın yarıçapı (km)
+		public double CalculateDistance(double lat1, double lon1, double lat2, double lon2)
+		{
+			double R = 6371; // km cinsinden dünya yarıçapı
+			double dLat = ToRadians(lat2 - lat1);
+			double dLon = ToRadians(lon2 - lon1);
+			double a =
+				Math.Sin(dLat / 2) * Math.Sin(dLat / 2) +
+				Math.Cos(ToRadians(lat1)) * Math.Cos(ToRadians(lat2)) *
+				Math.Sin(dLon / 2) * Math.Sin(dLon / 2);
+			double c = 2 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a));
+			return R * c;
+		}
 
-            var dLat = ToRad(lat2 - lat1);
-            var dLon = ToRad(lon2 - lon1);
+		private double ToRadians(double angle)
+		{
+			return angle * Math.PI / 180;
+		}
+	}
 
-            var a = Math.Sin(dLat / 2) * Math.Sin(dLat / 2) +
-                    Math.Cos(ToRad(lat1)) * Math.Cos(ToRad(lat2)) *
-                    Math.Sin(dLon / 2) * Math.Sin(dLon / 2);
-
-            var c = 2 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a));
-            var distance = R * c;
-
-            return distance;
-        }
-
-        private static double ToRad(double degree)
-        {
-            return degree * Math.PI / 180;
-        }
-    }
 }

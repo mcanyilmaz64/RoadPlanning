@@ -2,13 +2,16 @@
 {
     public class Taxi:Vehicle
     {
-		public override int OpeningFee()
-		{
-			return 10;
-		}
-		public override double CostPerKme(double k)
-		{
-			return k * 4;
-		}
-	}
+        public override string Name => "Taksi";
+
+        public double OpeningFee => 10.0;
+        public double PricePerKm => 4.0;
+
+        public double CalculateFare(double distanceKm)
+        {
+            return OpeningFee + (distanceKm * PricePerKm);
+        }
+
+       
+    }
 }

@@ -1,4 +1,5 @@
-﻿
+﻿@model PublicTransportApp.Models.UserData.RouteViewModel
+
 @{
 	ViewData["Title"] = "Index";
 	Layout = "~/Views/Shared/UILayout.cshtml";
@@ -51,22 +52,22 @@
 							<h6 class="mb-3">Rotaları Keşfet</h6>
 							<div class="flex-wrap search-wthree-field mt-md-5 mt-4">
 								@* <form action="#" method="post" class="booking-form">
-									<div class="row book-form">
-										<!-- İlk Kullanıcı Girişi -->
-										<div class="form-input col-md-4 mt-md-0 mt-3">
-											<input type="text" id="start-location" name="userInput1" class="form-control" placeholder="Başlangıç Konumunu Giriniz" required="">
-										</div>
-										<!-- İkinci Kullanıcı Girişi -->
-										<div class="form-input col-md-4 mt-md-0 mt-3">
-											<input type="text" id="end-location" name="userInput2" class="form-control" placeholder="Hedef Konumu Giriniz" required="">
-										</div>
-										<!-- Arama Butonu -->
-										<div class="bottom-btn col-md-4 mt-md-0 mt-3">
-											<button class="btn btn-style btn-secondary">
-												<span class="fa fa-search mr-3" aria-hidden="true"></span> Ara
-											</button>
-										</div>
-									</div>
+								<div class="row book-form">
+								<!-- İlk Kullanıcı Girişi -->
+								<div class="form-input col-md-4 mt-md-0 mt-3">
+								<input type="text" id="start-location" name="userInput1" class="form-control" placeholder="Başlangıç Konumunu Giriniz" required="">
+								</div>
+								<!-- İkinci Kullanıcı Girişi -->
+								<div class="form-input col-md-4 mt-md-0 mt-3">
+								<input type="text" id="end-location" name="userInput2" class="form-control" placeholder="Hedef Konumu Giriniz" required="">
+								</div>
+								<!-- Arama Butonu -->
+								<div class="bottom-btn col-md-4 mt-md-0 mt-3">
+								<button class="btn btn-style btn-secondary">
+								<span class="fa fa-search mr-3" aria-hidden="true"></span> Ara
+								</button>
+								</div>
+								</div>
 								</form> *@
 							</div>
 
@@ -88,7 +89,6 @@
 			</p>
 		</div>
 		<div class="custom-button-container">
-			
 		</div>
 
 
@@ -113,62 +113,60 @@
 					</div>
 
 					<div class="col-lg-6 mt-lg-0 mt-5 contact-right">
-						<form asp-controller="Result" asp-action="Index" method="post" class="signin-form">
+						<form asp-controller="Result" asp-action="CalculateRoute" method="post" class="signin-form">
 							<div class="input-grids">
-								<!-- Profil -->
+								<!-- Passenger Type -->
 								<div class="form-group">
-									<select name="profile" id="profile" class="contact-input" required
+									<select asp-for="PassengerType" class="contact-input" required
 											style="appearance: none; background-color: white; border: 1px solid #ccc; padding: 10px; width: 100%; font-size: 16px; border-radius: 5px; cursor: pointer;">
 										<option value="" disabled selected>Profil Seçiniz</option>
-										<option value="Öğrenci">Öğrenci</option>
-										<option value="Tam">Tam</option>
-										<option value="Yaşlı">Yaşlı</option>
+										<option value="Student">Öğrenci</option>
+										<option value="Normal">Tam</option>
+										<option value="Old">Yaşlı</option>
 									</select>
-
 								</div>
-
-								<!-- Başlangıç Saati -->
-								<div class="form-group">
-									<input type="time" name="time" id="time" class="contact-input" required />
-								</div>
-
-						
+							</div>
+							<!-- Başlangıç Saati -->
+							<div class="form-group">
+								<label asp-for="StartTime">Başlangıç Saati</label>
+								<input asp-for="StartTime" type="time" class="form-control" required />
 							</div>
 
-							
-							<!-- Başlangıç ve Hedef Koordinat Girişleri -->
+
 							<div class="row mt-4">
+								<!-- Start Coordinates -->
 								<div class="col-md-6">
 									<div class="form-group">
-										<label for="startLat">Başlangıç Enlem</label>
-										<input type="text" name="startLat" id="startLat" class="form-control" placeholder="Örn: 40.7657" required />
+										<label asp-for="StartLatitude">Başlangıç Enlem</label>
+										<input asp-for="StartLatitude" class="form-control" placeholder="Örn: 40.7657" required />
 									</div>
 								</div>
 								<div class="col-md-6">
 									<div class="form-group">
-										<label for="startLon">Başlangıç Boylam</label>
-										<input type="text" name="startLon" id="startLon" class="form-control" placeholder="Örn: 29.9290" required />
+										<label asp-for="StartLongitude">Başlangıç Boylam</label>
+										<input asp-for="StartLongitude" class="form-control" placeholder="Örn: 29.9290" required />
 									</div>
 								</div>
 
+								<!-- Destination Coordinates -->
 								<div class="col-md-6 mt-3">
 									<div class="form-group">
-										<label for="endLat">Hedef Enlem</label>
-										<input type="text" name="endLat" id="endLat" class="form-control" placeholder="Örn: 40.7630" required />
+										<label asp-for="DestinationLatitude">Hedef Enlem</label>
+										<input asp-for="DestinationLatitude" class="form-control" placeholder="Örn: 40.7630" required />
 									</div>
 								</div>
 								<div class="col-md-6 mt-3">
 									<div class="form-group">
-										<label for="endLon">Hedef Boylam</label>
-										<input type="text" name="endLon" id="endLon" class="form-control" placeholder="Örn: 29.9300" required />
+										<label asp-for="DestinationLongitude">Hedef Boylam</label>
+										<input asp-for="DestinationLongitude" class="form-control" placeholder="Örn: 29.9300" required />
 									</div>
 								</div>
 							</div>
-							<!-- Buton -->
+
+							<!-- Submit -->
 							<div class="custom-button-container mt-3">
 								<button type="submit" class="btn btn-style btn-success">Rota Bul</button>
 							</div>
-
 						</form>
 					</div>
 
@@ -180,7 +178,7 @@
 
 
 
-		
+
 
 
 	<script>

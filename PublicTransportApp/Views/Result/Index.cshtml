@@ -1,111 +1,87 @@
-﻿@using System.Linq
+﻿@model PublicTransportApp.Models.UserData.RouteViewModel
+
 @{
-    ViewData["Title"] = "Rota Sonuçları";
-    
-    bool routesAreEqual = false;
-    if (ViewBag.TimeBasedRoute != null && ViewBag.CostBasedRoute != null)
-    {
-        var timeRoute = ViewBag.TimeBasedRoute as List<PublicTransportApp.Models.Stops.Stop>;
-        var costRoute = ViewBag.CostBasedRoute as List<PublicTransportApp.Models.Stops.Stop>;
-        
-        if (timeRoute != null && costRoute != null && timeRoute.Count == costRoute.Count)
-        {
-            routesAreEqual = true;
-            for (int i = 0; i < timeRoute.Count; i++)
-            {
-                if (timeRoute[i].Id != costRoute[i].Id)
-                {
-                    routesAreEqual = false;
-                    break;
-                }
-            }
-        }
-    }
+    ViewBag.Title = "Rota Sonucu";
+    Layout = "~/Views/Shared/UILayout.cshtml";
 }
 
-<div class="container mt-4">
-    <h2>Rota Sonuçları</h2>
+<div class="container mt-5 text-center">
 
-    @if (TempData["Error"] != null)
-    {
-        <div class="alert alert-danger">
-            <i class="fas fa-exclamation-circle"></i>
-            @TempData["Error"]
-        </div>
-        <div class="text-center mt-3">
-            <a href="/" class="btn btn-primary">Ana Sayfaya Dön</a>
-        </div>
-    }
-    else if (ViewBag.StartStop != null && ViewBag.EndStop != null)
-    {
-        <div class="card mb-4">
-            <div class="card-header">
-                <h4>Başlangıç ve Bitiş Durakları</h4>
-            </div>
-            <div class="card-body">
-                <p><strong>Başlangıç Durağı:</strong> @ViewBag.StartStop.Name</p>
-                <p><strong>Bitiş Durağı:</strong> @ViewBag.EndStop.Name</p>
-            </div>
-        </div>
+    <h2 class="mb-4">Rota Bilgileri</h2>
 
-        @if (ViewBag.TimeBasedRoute != null)
+    <div class="mb-3">
+        <p><strong>Başlangıç:</strong> (@Model.StartLatitude, @Model.StartLongitude)</p>
+        <p><strong>Hedef:</strong> (@Model.DestinationLatitude, @Model.DestinationLongitude)</p>
+       
+        <p><strong>Toplam Süre:</strong> @Model.TotalDuration dakika</p>
+        <p><strong>Toplam Ücret:</strong> @Model.TotalFare ₺</p>
+
+        @if (Model.EstimatedArrivalTime.HasValue)
         {
-            <div class="card mb-4">
-                <div class="card-header bg-primary text-white">
-                    <h4>En Hızlı Rota</h4>
-                </div>
-                <div class="card-body">
-                    <h5>Duraklar:</h5>
-                    <ol>
-                        @foreach (var stop in ViewBag.TimeBasedRoute)
+            <p><strong>Tahmini Varış Saati:</strong> @Model.EstimatedArrivalTime.Value.ToString(@"hh\:mm")</p>
+        }
+    </div>
+
+    <hr class="my-4" />
+
+    <h3 class="mb-3">Rota Üzerindeki Duraklar</h3>
+
+    <ol class="list-unstyled">
+
+        <!-- Başlangıçtan durağa erişim -->
+        <li class="mb-4">
+            <div class="p-3 border rounded bg-warning-subtle">
+                <strong>Başlangıçtan İlk Durağa @Model.AccessType</strong><br />
+                <small>
+                    Süre: @((int)(Model.AccessType == "Taksi" ? Model.TotalDistance / 30.0 * 60 : Model.TotalDistance / 5.0 * 60)) dk |
+                    Mesafe: @Model.TotalDistance.ToString("F2") km |
+                    Ücret: @(Model.AccessType == "Taksi" ? (20 + Model.TotalDistance * 12).ToString("F2") : "0") ₺
+                </small>
+            </div>
+        </li>
+
+        <!-- Duraklar -->
+        @for (int i = 0; i < Model.RouteNodes.Count; i++)
+        {
+            var currentNode = Model.RouteNodes[i];
+            var nextNode = i < Model.RouteNodes.Count - 1 ? Model.RouteNodes[i + 1] : null;
+
+            <li class="mb-4">
+                <div class="p-3 border rounded bg-light">
+                    <strong>@currentNode.Stop.Name</strong> <span class="text-muted">(Type: @currentNode.Stop.Type)</span><br />
+                    <small>Koordinatlar: (@currentNode.Stop.Lat, @currentNode.Stop.Lon)</small>
+
+                    @if (nextNode != null)
+                    {
+                        var edge = currentNode.Edges?.FirstOrDefault(e => e.To == nextNode);
+                        if (edge != null)
                         {
-                            <li>@stop.Name</li>
+                            <br />
+                            <small class="text-muted">
+                                Süre: @edge.Duration dk |
+                                Ücret: @edge.Cost ₺ |
+                                Mesafe: @edge.Distance.ToString("F2") km
+                            </small>
                         }
-                    </ol>
-                    <p class="text-muted">Bu rota, seyahat süresini minimize etmek için optimize edilmiştir.</p>
+                    }
                 </div>
-            </div>
+            </li>
         }
 
-        @if (ViewBag.CostBasedRoute != null)
-        {
-            <div class="card mb-4">
-                <div class="card-header bg-success text-white">
-                    <h4>En Ekonomik Rota</h4>
-                </div>
-                <div class="card-body">
-                    <h5>Duraklar:</h5>
-                    <ol>
-                        @foreach (var stop in ViewBag.CostBasedRoute)
-                        {
-                            <li>@stop.Name</li>
-                        }
-                    </ol>
-                    <p class="text-muted">Bu rota, seyahat maliyetini minimize etmek için optimize edilmiştir.</p>
-                </div>
-            </div>
-        }
 
-        @if (routesAreEqual)
-        {
-            <div class="alert alert-info">
-                <i class="fas fa-info-circle"></i> 
-                En hızlı rota aynı zamanda en ekonomik rotadır!
+        <!-- Hedefe erişim -->
+        <li class="mb-4">
+            <div class="p-3 border rounded bg-info-subtle">
+                <strong>Son Duraktan Hedefe @Model.DestinationAccessType</strong><br />
+                <small>
+                    Süre: @Model.DestinationAccessDuration.ToString("F0") dk |
+                    Mesafe: @((Model.DestinationAccessDuration / 5.0).ToString("F2")) km |
+                    Ücret: @Model.DestinationAccessFare.ToString("F2") ₺
+                </small>
             </div>
-        }
+        </li>
 
-        <div class="text-center mt-3">
-            <a href="/" class="btn btn-primary">Yeni Rota Hesapla</a>
-        </div>
-    }
-    else
-    {
-        <div class="alert alert-warning">
-            <i class="fas fa-exclamation-triangle"></i>
-            Rota hesaplanamadı. Lütfen geçerli başlangıç ve bitiş noktaları seçin.
-        </div>
-        <div class="text-center mt-3">
-            <a href="/" class="btn btn-primary">Ana Sayfaya Dön</a>
-        </div>
-    }
+    </ol>
+
+
 </div>

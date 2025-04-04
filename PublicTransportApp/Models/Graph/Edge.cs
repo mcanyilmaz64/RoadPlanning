@@ -1,22 +1,17 @@
-﻿using PublicTransportApp.Models.Stops;
+﻿
+using PublicTransportApp.Models.Vehicles;
 
 namespace PublicTransportApp.Models.Graph
 {
-    public class Edge
-    {
-        public Stop From { get; set; }
-        public Stop To { get; set; }
-        public double Distance { get; set; } // km cinsinden
-        public double Cost { get; set; }     // TL cinsinden
-        public double Duration { get; set; } // dakika
+public class Edge
+{
+	public Node From { get; set; }
+	public Node To { get; set; }
+	public double Distance { get; set; }
+	public int Duration { get; set; }
+	public double Cost { get; set; }
+    public Vehicle Vehicle { get; set; }
 
-        public Edge(Stop from, Stop to, double distance, double cost, double duration)
-        {
-            From = from;
-            To = to;
-            Distance = distance;
-            Cost = cost;
-            Duration = duration;
-        }
     }
+
 }

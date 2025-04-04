@@ -2,58 +2,119 @@
 using PublicTransportApp.Services;
 using PublicTransportApp.Models.Graph;
 using PublicTransportApp.Models.Stops;
+using PublicTransportApp.Models.Algorithm;
+using PublicTransportApp.Models.UserData;
+using PublicTransportApp.Models.Passengers;
 
 namespace PublicTransportApp.Controllers
 {
-	public class ResultController : Controller
-	{
-		public IActionResult Index()
-		{
-			return View();
-		}
+    public class ResultController : Controller
+    {
+        private readonly GraphBuilder _graphBuilder = new GraphBuilder();
+        private readonly LocationService _locationService = new LocationService();
 
-		[HttpPost]
-		public IActionResult Index(string profile, string time, double startLat, double startLon, double endLat, double endLon)
-		{
-			try
-			{
-				var reader = new JsonReader();
-				var stops = reader.ReadStops();
+        public IActionResult Index()
+        {
+            return View();
+        }
 
-				var startStop = LocationService.FindNearestStop(stops, startLat, startLon);
-				var endStop = LocationService.FindNearestStop(stops, endLat, endLon);
+        [HttpPost]
+        public IActionResult CalculateRoute(RouteViewModel model)
+        {
+            // 1. Yolcu tipi oluştur
+            model.Passenger = model.PassengerType switch
+            {
+                "Student" => new Student(),
+                "Old" => new Old(),
+                _ => new Normal()
+            };
 
-				if (startStop == null || endStop == null)
-				{
-					TempData["Error"] = "Başlangıç veya bitiş noktası için uygun durak bulunamadı.";
-					return View();
-				}
+            // 2. Verileri oku
+            var jsonReader = new JsonReader();
+            var stopList = jsonReader.ReadStops();
 
-				var graph = GraphBuilder.BuildGraph(stops);
+            // 3. Grafı oluştur
+            var graph = _graphBuilder.BuildGraph(stopList);
 
-				var timeBasedRoute = graph.FindShortestPath(startStop, endStop, EdgeWeightType.Time);
-				var costBasedRoute = graph.FindShortestPath(startStop, endStop, EdgeWeightType.Cost);
+            // 4. Başlangıç ve hedefe en yakın durakları bul
+            Node startNode = _locationService.FindClosestNode(model.StartLatitude, model.StartLongitude, graph);
+            Node endNode = _locationService.FindClosestNode(model.DestinationLatitude, model.DestinationLongitude, graph);
 
-				if (timeBasedRoute == null || costBasedRoute == null || !timeBasedRoute.Any() || !costBasedRoute.Any())
-				{
-					TempData["Error"] = "Seçilen duraklar arasında rota bulunamadı.";
-					return View();
-				}
+            // 5. Başlangıçtan ilk durağa erişim (yürüme/taksi)
+            double walkToStopDistance = _locationService.CalculateDistance(
+                model.StartLatitude, model.StartLongitude,
+                startNode.Stop.Lat, startNode.Stop.Lon
+            );
 
-				ViewBag.Profile = profile;
-				ViewBag.Time = time;
-				ViewBag.StartStop = startStop;
-				ViewBag.EndStop = endStop;
-				ViewBag.TimeBasedRoute = timeBasedRoute;
-				ViewBag.CostBasedRoute = costBasedRoute;
+            double accessFare = 0;
+            int accessDuration = 0;
 
-				return View();
-			}
-			catch (Exception ex)
-			{
-				TempData["Error"] = "Rota hesaplanırken bir hata oluştu: " + ex.Message;
-				return View();
-			}
-		}
-	}
+            if (walkToStopDistance >= 3.0)
+            {
+                accessFare = 20.0 + walkToStopDistance * 12.0;
+                accessDuration = (int)(walkToStopDistance / 30.0 * 60); // km/h
+                model.AccessType = "Taksi";
+            }
+            else
+            {
+                accessFare = 0;
+                accessDuration = (int)(walkToStopDistance / 5.0 * 60); // km/h
+                model.AccessType = "Yürüyüş";
+            }
+
+            // 6. Rota hesapla
+            var dijkstra = new Dijkstra();
+            var path = dijkstra.FindShortestPath(startNode, endNode, edge => edge.Duration);
+
+            // 🔹 Rotayı hem durak hem de Node olarak sakla
+            model.Route = path.Select(n => n.Stop).ToList();
+            model.RouteNodes = path;
+
+            // 7. Süre ve ücret hesapla
+            int routeDuration = path.Zip(path.Skip(1), (a, b) =>
+                a.Edges.FirstOrDefault(e => e.To == b)?.Duration ?? 0
+            ).Sum();
+
+            double routeFare = path.Zip(path.Skip(1), (a, b) =>
+                a.Edges.FirstOrDefault(e => e.To == b)?.Cost ?? 0
+            ).Sum();
+
+            model.TotalDistance = walkToStopDistance;
+
+            // 8. Son duraktan hedefe erişim
+            Stop lastStop = model.Route.LastOrDefault();
+            if (lastStop != null)
+            {
+                double distanceToDestination = _locationService.CalculateDistance(
+                    lastStop.Lat, lastStop.Lon,
+                    model.DestinationLatitude, model.DestinationLongitude
+                );
+
+                if (distanceToDestination >= 3.0)
+                {
+                    model.DestinationAccessFare = 20.0 + distanceToDestination * 12.0;
+                    model.DestinationAccessDuration = distanceToDestination / 30.0 * 60;
+                    model.DestinationAccessType = "Taksi";
+                }
+                else
+                {
+                    model.DestinationAccessFare = 0;
+                    model.DestinationAccessDuration = distanceToDestination / 5.0 * 60;
+                    model.DestinationAccessType = "Yürüyüş";
+                }
+            }
+
+            // 9. Toplam süre ve ücret
+            model.TotalDuration = accessDuration + routeDuration + model.DestinationAccessDuration;
+            model.TotalFare = accessFare + routeFare + model.DestinationAccessFare;
+
+            // 10. Tahmini varış saati
+            if (model.StartTime.HasValue)
+            {
+                model.EstimatedArrivalTime = model.StartTime.Value.AddMinutes(model.TotalDuration);
+            }
+
+            return View("Index", model);
+        }
+    }
 }
