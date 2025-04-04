@@ -13,7 +13,8 @@
         <p><strong>Başlangıç:</strong> (@Model.StartLatitude, @Model.StartLongitude)</p>
         <p><strong>Hedef:</strong> (@Model.DestinationLatitude, @Model.DestinationLongitude)</p>
        
-       
+        <p><strong>Toplam Süre:</strong> @Model.TotalDuration dakika</p>
+        <p><strong>Toplam Ücret:</strong> @Model.TotalFare ₺</p>
         @if (Model.PaymentAmount < Model.TotalFare)
         {
             <div class="alert alert-danger mt-3">
@@ -94,7 +95,6 @@
 
     </ol>
     <hr class="my-5" />
-
 
     <h4 class="mb-3">Farklı Ulaşım Türüyle Rota Hesapla</h4>
 
