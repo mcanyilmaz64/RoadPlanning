@@ -1,10 +1,7 @@
 ﻿namespace PublicTransportApp.Models.Passengers
 {
-	public class Normal : Passenger//use colon=":" sign instead "extends" keyword
+	public class Normal : Passenger
 	{
-		public override double TransPrice(double Price)
-		{
-			return Price;
-		}
+		
 	}
 }

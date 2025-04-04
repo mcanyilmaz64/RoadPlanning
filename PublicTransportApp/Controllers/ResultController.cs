@@ -5,6 +5,7 @@ using PublicTransportApp.Models.Stops;
 using PublicTransportApp.Models.Algorithm;
 using PublicTransportApp.Models.UserData;
 using PublicTransportApp.Models.Passengers;
+using PublicTransportApp.Models.Vehicles;
 
 namespace PublicTransportApp.Controllers
 {
@@ -76,8 +77,13 @@ namespace PublicTransportApp.Controllers
             ).Sum();
 
             double routeFare = path.Zip(path.Skip(1), (a, b) =>
-                a.Edges.FirstOrDefault(e => e.To == b)?.Cost ?? 0
-            ).Sum();
+            {
+                var edge = a.Edges.FirstOrDefault(e => e.To == b);
+                if (edge == null) return 0;
+
+                // Taksi değilse indirimi uygula
+                return edge.Vehicle is Taxi ? edge.Cost : model.Passenger.ApplyDiscount(edge.Cost);
+            }).Sum();
 
             model.TotalDistance = walkToStopDistance;
 

@@ -2,9 +2,7 @@
 {
 	public class Old : Passenger
 	{
-		public override double TransPrice(double Price)
-		{
-			return 0; 
-		}
-	}
+        public override double ApplyDiscount(double cost) => 0;
+    }
 }
+

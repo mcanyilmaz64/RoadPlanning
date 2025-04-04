@@ -2,9 +2,6 @@
 {
 	public class Student : Passenger
 	{
-		public override double TransPrice(double price)
-		{
-			return price/2;
-		}
-	}
+        public override double ApplyDiscount(double cost) => cost * 0.5;
+    }
 }
