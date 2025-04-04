@@ -82,6 +82,31 @@
         </li>
 
     </ol>
+    <hr class="my-5" />
+
+    <h4 class="mb-3">Farklı Ulaşım Türüyle Rota Hesapla</h4>
+
+    <form asp-action="CalculateRoute" asp-controller="Result" method="post" class="text-start">
+
+        <input type="hidden" name="StartLatitude" value="@Model.StartLatitude" />
+        <input type="hidden" name="StartLongitude" value="@Model.StartLongitude" />
+        <input type="hidden" name="DestinationLatitude" value="@Model.DestinationLatitude" />
+        <input type="hidden" name="DestinationLongitude" value="@Model.DestinationLongitude" />
+        <input type="hidden" name="PassengerType" value="@Model.PassengerType" />
+        <input type="hidden" name="StartTime" value="@Model.StartTime?.ToString("yyyy-MM-ddTHH:mm")" />
+
+        <div class="form-group">
+            <label for="TransportMode"><strong>Alternatif Rota Seçin:</strong></label>
+            <select name="TransportMode" id="TransportMode" class="form-control" required>
+                <option value="default" selected>En Uygun Rota</option>
+                <option value="taxi">Sadece Taksi</option>
+                <option value="bus">Sadece Otobüs</option>
+                <option value="tram">Sadece Tramvay</option>
+            </select>
+        </div>
+
+        <button type="submit" class="btn btn-primary mt-3">Rota Hesapla</button>
+    </form>
 
 
 </div>

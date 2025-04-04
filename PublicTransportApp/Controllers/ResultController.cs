@@ -34,6 +34,50 @@ namespace PublicTransportApp.Controllers
             var jsonReader = new JsonReader();
             var stopList = jsonReader.ReadStops();
 
+            // 3.5 Alternatif ulaşım türü kontrolü
+            if (model.TransportMode == "bus" || model.TransportMode == "tram")
+            {
+                stopList = stopList.Where(s => s.Type == model.TransportMode).ToList();
+            }
+
+            // Eğer doğrudan taksi seçildiyse, rota hesabı yapılmaz
+            if (model.TransportMode == "taxi")
+            {
+                double distance = _locationService.CalculateDistance(
+                    model.StartLatitude, model.StartLongitude,
+                    model.DestinationLatitude, model.DestinationLongitude
+                );
+
+                double fare = 10 + (distance * 4);
+                int duration = (int)(distance / 30.0 * 60); // 30 km/h
+
+                model.Route = new List<Stop>
+    {
+        new Stop
+        {
+            Name = "Taksi ile doğrudan ulaşım",
+            Lat = model.DestinationLatitude,
+            Lon = model.DestinationLongitude,
+            Type = "taxi"
+        }
+    };
+
+                model.TotalFare = fare;
+                model.TotalDuration = duration;
+                model.AccessType = "Taksi";
+                model.DestinationAccessType = "Taksi";
+                model.TotalDistance = distance;
+
+                if (model.StartTime.HasValue)
+                {
+                    model.EstimatedArrivalTime = model.StartTime.Value.AddMinutes(duration);
+                }
+
+                return View("Index", model);
+            }
+
+
+
             // 3. Grafı oluştur
             var graph = _graphBuilder.BuildGraph(stopList);
 

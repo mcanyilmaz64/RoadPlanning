@@ -17,7 +17,8 @@ namespace PublicTransportApp.Models.UserData
 		public Passenger? Passenger { get; set; }
 		public DateTime? StartTime { get; set; }
 		public DateTime? EstimatedArrivalTime { get; set; }
-		//public string PaymentMethod { get; set; } // "Cash", "Card", "TransitCard"
+        //public string PaymentMethod { get; set; } // "Cash", "Card", "TransitCard"
+        public string TransportMode { get; set; } = "default";
 
         public List<Node> RouteNodes { get; set; } = new List<Node>();
         // Result fields
